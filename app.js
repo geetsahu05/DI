@@ -265,7 +265,10 @@ app.post('/registerProductDetails', async (req, res) => {
             throw new Error("Product ID is not defined after creation");
         }
 
-        const productUrl = `https://sih-8aav.onrender.com/productVerify/${newProductDetails._id}`;
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const productUrl = `${baseUrl}/productVerify/${newProductDetails._id}`;
+
+        //const productUrl = `https://sih-8aav.onrender.com/productVerify/${newProductDetails._id}`;
         console.log(`Product URL: ${productUrl}`);
 
         // Generate QR Code
@@ -308,9 +311,13 @@ app.get('/showQRCode', (req, res) => {
     const productId = req.query.productId;
 
     console.log(`Your product ID is ${productId}`);
-
-    res.render('displayQRCode', { qrCodeUrl, productId }); // Pass the product ID to the EJS template
+    
+    // Create the dynamic product link
+    const productLink = `${req.protocol}://${req.get('host')}/productVerify/${productId}`;
+    
+    res.render('displayQRCode', { qrCodeUrl, productId, productLink }); // Pass the product link to EJS template
 });
+
 
 function isHaveToken(req, res, next) {
     const token = req.cookies.token;
