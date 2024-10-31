@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-mongoose.connect('mongodb://127.0.0.1:27017/Geetdata')
+mongoose.connect('mongodb+srv://geetsahu1852005:80UfZp6Pf3pzqNQ9@sihcluster.1zgai.mongodb.net/?retryWrites=true&w=majority&appName=SIHCluster')
 
 const userSchema = mongoose.Schema({
     userID: String,
