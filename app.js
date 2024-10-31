@@ -41,123 +41,87 @@ app.get("/loginconsumer", (req, res) => {
     res.render('loginconsumer');
 });
 
-// app.post("/createmanufacture", async (req, res) => {
-//     const { userID, email, password, gst, pincode, name, address, contact_number } = req.body;
-
-//     try {
-//         // Check if the email or userID is already registered
-//         let userCheck = await userModel.findOne({ email });
-//         let IdCheck = await userModel.findOne({ userID });
-
-//         if (userCheck) {
-//             return res.send("Email already registered");
-//         }
-
-//         if (IdCheck) {
-//             return res.send("User ID already used");
-//         }
-
-        
-//         if (String(pincode).length !== 6) {
-//             return res.send("Pincode must be exactly 6 digits");
-//         }
-
-        
-//         if (String(contact_number).length !== 10) {
-//             return res.send("Contact number must be exactly 10 digits");
-//         }
-
-        
-//         const salt = await bcrypt.genSalt(10);
-//         const hash = await bcrypt.hash(password, salt);
-
-        
-//         let createdUser = await userModel.create({
-//             userID,
-//             name,
-//             address,
-//             pincode,
-//             contact_number,
-//             email,
-//             password: hash,
-//             GST: gst,
-//         });
-
-        
-//         res.redirect("/success");
-//     } catch (error) {
-//         res.status(500).send("An error occurred during registration");
-//     }
-// });
-
 app.post("/createmanufacture", async (req, res) => {
     const { userID, email, password, gst, pincode, name, address, contact_number } = req.body;
 
     try {
-        if (await userModel.findOne({ email }) || await userModel.findOne({ userID })) {
-            return res.send("Email or User ID already registered");
+        // Check if the email or userID is already registered
+        let userCheck = await userModel.findOne({ email });
+        let IdCheck = await userModel.findOne({ userID });
+
+        if (userCheck) {
+            return res.send("Email already registered");
         }
 
-        if (String(pincode).length !== 6 || String(contact_number).length !== 10) {
-            return res.send("Invalid pincode or contact number length");
+        if (IdCheck) {
+            return res.send("User ID already used");
         }
 
-        const hash = await bcrypt.hash(password, 10);
-        await userModel.create({
-            userID, name, address, pincode, contact_number, email, password: hash, GST: gst
+        
+        if (String(pincode).length !== 6) {
+            return res.send("Pincode must be exactly 6 digits");
+        }
+
+        
+        if (String(contact_number).length !== 10) {
+            return res.send("Contact number must be exactly 10 digits");
+        }
+
+        
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
+
+        
+        let createdUser = await userModel.create({
+            userID,
+            name,
+            address,
+            pincode,
+            contact_number,
+            email,
+            password: hash,
+            GST: gst,
         });
 
+        
         res.redirect("/success");
     } catch (error) {
         res.status(500).send("An error occurred during registration");
     }
 });
 
-// app.post("/login", async (req, res) => {
-//     const {userID, email, password } = req.body;
 
-//     try {
-//         let userCheck = await userModel.findOne({ email });
-//         let userIDCheck = await userModel.findOne({ userID });
-
-
-//         if (!userCheck) {
-//             return res.send("Invalid Credentials");
-//         }
-
-//         if (!userIDCheck) {
-//             return res.send("Invalid Credentials");
-//         }
-
-//         const result = await bcrypt.compare(password, userCheck.password);
-//         if (result) {
-//             let token = jwt.sign({ email , userID}, "shsh");
-//             res.cookie("token", token);
-//             res.redirect("/profile");
-//         } else {
-//             res.send("Invalid Credentials");
-//         }
-//     } catch (error) {
-//         res.status(500).send("An error occurred during login process");
-//     }
-// });
 
 app.post("/login", async (req, res) => {
-    const { userID, email, password } = req.body;
+    const {userID, email, password } = req.body;
 
     try {
-        let user = await userModel.findOne({ email });
-        if (!user || user.userID !== userID || !await bcrypt.compare(password, user.password)) {
+        let userCheck = await userModel.findOne({ email });
+        let userIDCheck = await userModel.findOne({ userID });
+
+
+        if (!userCheck) {
             return res.send("Invalid Credentials");
         }
 
-        const token = jwt.sign({ email, userID }, "shsh", { expiresIn: '1h' });
-        res.cookie("token", token, { httpOnly: true, secure: false, sameSite: 'lax' });
-        res.redirect("/profile");
+        if (!userIDCheck) {
+            return res.send("Invalid Credentials");
+        }
+
+        const result = await bcrypt.compare(password, userCheck.password);
+        if (result) {
+            let token = jwt.sign({ email , userID}, "shsh");
+            res.cookie("token", token);
+            res.redirect("/profile");
+        } else {
+            res.send("Invalid Credentials");
+        }
     } catch (error) {
         res.status(500).send("An error occurred during login process");
     }
 });
+
+
 
 app.get("/success", (req, res) => {
     res.render('success');
@@ -167,87 +131,55 @@ app.get("/success_consumer", (req, res) => {
 });
 
 
-// function isLoggedIn(req, res, next) {
-//     const token = req.cookies.token;
-//     if (!token) {
-//         return res.redirect("/loginPage");
-//     }
-
-//     try {
-//         const data = jwt.verify(token, "shsh");
-//         req.user = data; 
-//         next(); 
-//     } catch (err) {
-//         return res.redirect("/loginPage"); 
-//     }
-// }
-
 function isLoggedIn(req, res, next) {
     const token = req.cookies.token;
-    if (!token) return res.redirect("/loginPage");
+    if (!token) {
+        return res.redirect("/loginPage");
+    }
 
     try {
-        req.user = jwt.verify(token, "shsh");
-        next();
+        const data = jwt.verify(token, "shsh");
+        req.user = data; 
+        next(); 
     } catch (err) {
-        res.redirect("/loginPage");
+        return res.redirect("/loginPage"); 
     }
 }
 
 
-// app.get('/profile', isLoggedIn, async (req, res) => {
-//     console.log(req.user); 
-//     try {
-//         const products = await ProductModel.find({ manufactureId: req.user.userID });
 
-//         const filteredProducts = products.map(product => ({
-//             manufactureId: product.manufactureId,
-//             manufactureName :  product.manufactureName,
-//             consumerId: product.consumerId,
-//             consumerName: product.consumerName,
-//             productName: product.productName,
-//             quantity:product.quantity,
-//             price:product.price,
-//             orderDate: product.orderDate,
-//             _id: product._id 
-//         }));
-
-//         const wholeData = {
-
-//             local: req.user,
-//             products: filteredProducts 
-//         }
-
-//         res.render('profile', { data: wholeData });
-//     } catch (error) {
-//         console.error('Error fetching products:', error);
-//         res.status(500).send('Server Error');
-//     }
-// });
 
 app.get('/profile', isLoggedIn, async (req, res) => {
+    console.log(req.user); 
     try {
         const products = await ProductModel.find({ manufactureId: req.user.userID });
-        res.render('profile', {
-            data: {
-                local: req.user,
-                products: products.map(product => ({
-                    manufactureId: product.manufactureId,
-                    manufactureName: product.manufactureName,
-                    consumerId: product.consumerId,
-                    consumerName: product.consumerName,
-                    productName: product.productName,
-                    quantity: product.quantity,
-                    price: product.price,
-                    orderDate: product.orderDate,
-                    _id: product._id
-                }))
-            }
-        });
+
+        const filteredProducts = products.map(product => ({
+            manufactureId: product.manufactureId,
+            manufactureName :  product.manufactureName,
+            consumerId: product.consumerId,
+            consumerName: product.consumerName,
+            productName: product.productName,
+            quantity:product.quantity,
+            price:product.price,
+            orderDate: product.orderDate,
+            _id: product._id 
+        }));
+
+        const wholeData = {
+
+            local: req.user,
+            products: filteredProducts 
+        }
+
+        res.render('profile', { data: wholeData });
     } catch (error) {
+        console.error('Error fetching products:', error);
         res.status(500).send('Server Error');
     }
 });
+
+
 
 app.get('/registerProductDetails', isLoggedIn, async(req, res) => {
     if (!req.user) {
@@ -442,51 +374,29 @@ app.get('/fullorderdetails/:id', async (req, res) => {
     }
 });
 
-// app.post('/createconsumer', async (req, res) => {
-//     try {
-//         // Destructure data from the form submission
-//         const { hospital_name, consumer_email, consumer_password, location, pincode, hospital_license_no } = req.body;
-//         const hashedPassword = await bcrypt.hash(consumer_password, 10);
-//         const newConsumer = new Consumer({
-//             hospital_name,
-//             consumer_email,
-//             consumer_password:hashedPassword,
-//             location,
-//             pincode,
-//             hospital_license_no
-//         });
- 
-//         await newConsumer.save();
-  
-//         res.redirect("/success_consumer");
-//     } catch (error) {
-//         if (error.code === 11000) {
-//             res.status(400).send("Email is already registered.");
-//         } else {
-//             res.status(500).send("Error registering consumer: " + error.message);
-//         }
-//     }
-// });
-
 app.post('/createconsumer', async (req, res) => {
-    const { hospital_name, consumer_email, consumer_password, location, pincode, hospital_license_no } = req.body;
-
     try {
-        if (await Consumer.findOne({ consumer_email })) return res.send("Email already registered");
-
+        // Destructure data from the form submission
+        const { hospital_name, consumer_email, consumer_password, location, pincode, hospital_license_no } = req.body;
         const hashedPassword = await bcrypt.hash(consumer_password, 10);
-        await Consumer.create({
+        const newConsumer = new Consumer({
             hospital_name,
             consumer_email,
-            consumer_password: hashedPassword,
+            consumer_password:hashedPassword,
             location,
             pincode,
             hospital_license_no
         });
-
+ 
+        await newConsumer.save();
+  
         res.redirect("/success_consumer");
     } catch (error) {
-        res.status(500).send("Error registering consumer");
+        if (error.code === 11000) {
+            res.status(400).send("Email is already registered.");
+        } else {
+            res.status(500).send("Error registering consumer: " + error.message);
+        }
     }
 });
 
