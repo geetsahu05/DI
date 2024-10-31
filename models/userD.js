@@ -1,25 +1,31 @@
-const mongoose = require('mongoose')
-
-mongoose.connect('mongodb+srv://geetsahu1852005:80UfZp6Pf3pzqNQ9@sihcluster.1zgai.mongodb.net/?retryWrites=true&w=majority&appName=SIHCluster')
-  .then(() => {
-    console.log('MongoDB connected successfully');
-  })
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-  });
-
-const userSchema = mongoose.Schema({
-    userID: String,
-    name:String,
-    address:String,
-    pincode: Number,
-    contact_number:Number,
-    email: String,
-    password: String,
-    GST: String,
-    total_complaints:Number,
-    total_resolved:Number
-    
-})
-
-module.exports = mongoose.model("usersD", userSchema)
+ // Import dotenv to load environment variables from .env file
+ require('dotenv').config();
+ const mongoose = require('mongoose');
+ 
+ // Use the environment variable for MongoDB URI
+ const mongoURI = process.env.MONGODB_URI;
+ 
+ // Connect to MongoDB Atlas or fallback to local MongoDB
+ mongoose.connect(mongoURI, {
+     useNewUrlParser: true,
+     useUnifiedTopology: true
+ })
+ .then(() => console.log('Connected to MongoDB'))
+ .catch((error) => console.error('Error connecting to MongoDB:', error));
+ 
+ // Define schema
+ const userSchema = mongoose.Schema({
+     userID: String,
+     name: String,
+     address: String,
+     pincode: Number,
+     contact_number: Number,
+     email: String,
+     password: String,
+     GST: String,
+     total_complaints: Number,
+     total_resolved: Number
+ });
+ 
+ // Export model
+ module.exports = mongoose.model("usersD", userSchema);
