@@ -265,7 +265,7 @@ app.post('/registerProductDetails', async (req, res) => {
             throw new Error("Product ID is not defined after creation");
         }
 
-        const productUrl = `http://192.168.1.6:3000/productVerify/${newProductDetails._id}`;
+        const productUrl = `http://localhost:3000/productVerify/${newProductDetails._id}`;
         console.log(`Product URL: ${productUrl}`);
 
         // Generate QR Code
