@@ -2,7 +2,9 @@ const mongoose = require('mongoose')
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+
 const jwt = require('jsonwebtoken');
 const userModel = require('./models/userD');
 const ProductModel = require('./models/productDetails')
