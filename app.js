@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 //const bcrypt = require('bcrypt');
+//Render and vercel
 const bcrypt = require('bcryptjs');
 
 const jwt = require('jsonwebtoken');
