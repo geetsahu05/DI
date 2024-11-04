@@ -11,6 +11,10 @@ var nodemailer = require('nodemailer');
 const app = express();
 const QRCode = require('qrcode'); 
 const Consumer=require('./models/consumer')
+
+const PORT = process.env.PORT || 3000;
+
+
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -126,6 +130,7 @@ app.post("/login", async (req, res) => {
 app.get("/success", (req, res) => {
     res.render('success');
 });
+
 app.get("/success_consumer", (req, res) => {
     res.render('success_consumer');
 });
@@ -504,6 +509,6 @@ function isLoggedInconsumer(req, res, next) {
     }
 }
 
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000');
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
