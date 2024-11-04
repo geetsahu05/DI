@@ -1,9 +1,8 @@
 {
   "name": "part-1",
   "version": "1.0.0",
-  "main": "app.js", 
+  "main": "index.js",
   "scripts": {
-    "start": "node app.js", 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -24,8 +23,5 @@
     "ngrok": "^5.0.0-beta.2",
     "nodemailer": "^6.9.16",
     "qrcode": "^1.5.4"
-  },
-  "engines": {
-    "node": "14.x" 
   }
 }
