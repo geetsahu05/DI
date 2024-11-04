@@ -16,12 +16,16 @@ const Consumer=require('./models/consumer')
 
 const PORT = process.env.PORT || 3000;
 
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
+
+
 
 app.get("/login", (req, res) => {
     res.render('login');
@@ -510,6 +514,8 @@ function isLoggedInconsumer(req, res, next) {
         res.status(403).send('Forbidden: Invalid token');
     }
 }
+
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
