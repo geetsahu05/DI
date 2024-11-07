@@ -5,6 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+        .card-body .row {
+            border-bottom: 1px solid #e9ecef;
+            padding: 8px 0;
+        }
+        .card-body .row:last-child {
+            border-bottom: none;
+        }
+        .font-weight-bold {
+            color: #495057;
+        }
+        .text-danger {
+            font-weight: bold;
+        }
+        .btn-primary, .btn-success {
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-success:hover {
+            background-color: #28a745;
+        }
+        .product-item {
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
@@ -27,7 +70,15 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4 font-weight-bold">Product Name:</div>
-                    <div class="col-md-8"><%= product.productName %></div>
+                    <div class="col-md-8">
+                        <% product.productName.forEach(item => { %>
+                            <div class="product-item">
+                                <strong>Name:</strong> <%= item.name %><br>
+                                <strong>Quantity:</strong> <%= item.quantity %><br>
+                                <strong>Price:</strong> $<%= item.price %>
+                            </div>
+                        <% }) %>
+                    </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4 font-weight-bold">Product Date:</div>
@@ -35,7 +86,8 @@
                 </div>
             </div>
             <div class="card-footer text-center">
-                <a href="/profile" class="btn btn-primary">Back to Profile</a>
+                <a href="/profile" class="btn btn-primary mr-2">Back to Profile</a>
+                <a href="/receive-order/<%= product.id%>" class="btn btn-success">Receive the Order</a>
             </div>
         </div>
     </div>

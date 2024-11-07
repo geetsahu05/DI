@@ -361,7 +361,7 @@ app.get('/productVerify/:id', isHaveToken ,async (req, res) => {
         if (!product) {
             return res.status(404).send('Product not found');
         }
-        res.render('verifyProductByQr', { product });
+        res.render('AuthCode', { product });
     } catch (err) {
         console.error('Error fetching product details:', err.message);
         res.status(500).send('An error occurred while retrieving product details.');
@@ -392,6 +392,63 @@ app.get('/fullorderdetails/:id', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+app.post("/submitAuthCode", async (req, res) => {
+    const securityCode = req.body.UsersecurityCode;
+    const productId = req.body.productId;
+    
+    try {
+        
+        const product = await ProductModel.findById(productId);
+
+        if (!product) {
+            return res.status(404).send("Product not found.");
+        }
+        
+    
+        if (product.SecurityCode === securityCode) {
+
+            res.render("verifyProductByQr" , {product})
+            
+        } else {
+            res.send("Invalid security code. Please try again.");
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("An error occurred while processing your request.");
+    }
+});
+
+app.get("/receive-order/:id", async (req, res) => {
+    try {
+        // Get the product ID from the request params
+        const TempProductid = req.params.id;
+
+        // Find the product by its ID
+        const tempProduct = await ProductModel.findById(TempProductid);
+        
+        if (!tempProduct) {
+            // If the product is not found, send an error response
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        // Update the order status to "Delivered"
+        tempProduct.order_status = "Delivered";
+
+        // Save the updated product document
+        await tempProduct.save();
+        res.send("Done")
+
+        // Send a success response
+        res.status(200).json({ message: "Order marked as delivered", product: tempProduct });
+    } catch (error) {
+        // Handle any errors
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
 
 app.post('/createconsumer', async (req, res) => {
     try {
@@ -515,6 +572,35 @@ function isLoggedInconsumer(req, res, next) {
         res.status(403).send('Forbidden: Invalid token');
     }
 }
+
+
+
+// app.post("/AuthPage", async(req, res) => {
+
+//     const securityCode = req.body.securityCode;
+
+//     try{
+
+//         const temp = ProductModel.find({name:})
+
+
+//     }catch{
+
+
+//     }
+    
+    
+//     if (securityCode === 'expectedCode') {
+
+//         res.send("Security code verified successfully.");
+
+//     } else {
+
+//         res.send("Invalid security code. Please try again.");
+
+//     }
+
+// });
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
