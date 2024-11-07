@@ -333,8 +333,9 @@ app.get('/showQRCode', (req, res) => {
 
 function isHaveToken(req, res, next) {
     const token = req.cookies.token;
+    
     if (!token) {
-        res.send("You Don't have a Proper Token Or Not using the Authorized Scanner")
+        return res.send("You Don't have a Proper Token Or Not using the Authorized Scanner");
     }
 
     try {
@@ -347,26 +348,21 @@ function isHaveToken(req, res, next) {
 }
 
 app.get('/productVerify/:id', isHaveToken ,async (req, res) => {
-
-    console.log(req.user)
-    
-    if(!req.user){
-
-        res.send("You Don't have a Proper Token Or Not using the Authorized Scanner")
-
-    }
-
     try {
         const product = await ProductModel.findById(req.params.id);
         if (!product) {
             return res.status(404).send('Product not found');
         }
+        
+        // If user is authenticated, render the product details page
         res.render('AuthCode', { product });
+        
     } catch (err) {
         console.error('Error fetching product details:', err.message);
         res.status(500).send('An error occurred while retrieving product details.');
     }
 });
+
 
 
 
